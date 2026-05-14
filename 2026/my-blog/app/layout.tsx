@@ -4,6 +4,7 @@ import "./globals.css";
 import Navigation from "@/components/Navigation"
 import { ThemeProvider } from '@/contexts/ThemeContext'
 import { UserProvider } from '@/contexts/UserContext'
+import UserStoreInitializer from "@/components/UserStoreInitializer"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,6 +33,7 @@ export default function RootLayout({
       >
         <ThemeProvider>
           <UserProvider>
+          <UserStoreInitializer />
           <div className="min-h-screen flex flex-col w-screen">
             <header className="flex gap-4 h-16 content-center justify-center">
               <Navigation />

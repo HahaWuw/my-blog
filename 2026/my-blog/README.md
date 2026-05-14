@@ -34,3 +34,19 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## 七牛云附件上传
+
+在 `.env.local` 中配置七牛云：
+
+```env
+QINIU_ACCESS_KEY=你的 AccessKey
+QINIU_SECRET_KEY=你的 SecretKey
+QINIU_BUCKET=空间名称
+QINIU_DOMAIN=https://你的CDN域名
+```
+
+- 在 [七牛云控制台](https://portal.qiniu.com/) 创建空间，在「个人中心」-「密钥管理」获取 AK/SK。
+- `QINIU_DOMAIN` 为空间绑定的访问域名（用于拼接文件 URL），如 `https://xxx.bkt.clouddn.com`。
+
+使用方式：在页面中引入 `QiniuUpload` 组件，通过 `onSuccess` 获取上传后的文件 URL。

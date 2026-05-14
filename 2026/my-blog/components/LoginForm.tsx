@@ -2,9 +2,27 @@
 
 import { useState } from 'react'
 import { createClient } from '@/utils/supabase/client'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 // import Web3LoginButton from './Web3LoginButton'
 import { useUserStore } from '@/store/userStore'
+
+function formatAuthError(err: unknown): string {
+  const msg =
+    err && typeof err === 'object' && 'message' in err
+      ? String((err as { message: string }).message)
+      : ''
+  const lower = msg.toLowerCase()
+  if (lower.includes('invalid login') || lower.includes('invalid credentials')) {
+    return '邮箱或密码不正确；若尚未注册请先切换到「注册」。'
+  }
+  if (lower.includes('email not confirmed')) {
+    return '请先完成邮箱验证（查收邮件中的链接），或在 Supabase 控制台将该用户标为已验证。'
+  }
+  if (lower.includes('fetch') || lower.includes('network')) {
+    return '无法连接到 Supabase，请检查网络、.env.local 中的 URL 与密钥，并重启 dev 服务。'
+  }
+  return msg || '操作失败，请重试'
+}
 
 export default function LoginForm() {
   const [email, setEmail] = useState('')
@@ -14,6 +32,7 @@ export default function LoginForm() {
   const [message, setMessage] = useState('')
   const [isSignUp, setIsSignUp] = useState(false)
   const router = useRouter()
+  const searchParams = useSearchParams()
   const { initialize } = useUserStore()
 
   const handleGithubLogin = async () => {
@@ -28,9 +47,9 @@ export default function LoginForm() {
         },
       })
       if (error) throw error
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('GitHub login error:', err)
-      setError(err.message || 'GitHub 登录失败')
+      setError(formatAuthError(err))
       setIsLoading(false)
     }
   }
@@ -71,12 +90,13 @@ export default function LoginForm() {
         // 登录成功后，手动初始化用户状态
         await initialize()
 
-        router.push('/')
+        const redirectTo = searchParams.get('redirect') || '/'
+        router.push(redirectTo)
         router.refresh()
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Auth error:', err)
-      setError(err.message || '操作失败，请重试')
+      setError(formatAuthError(err))
     } finally {
       setIsLoading(false)
     }

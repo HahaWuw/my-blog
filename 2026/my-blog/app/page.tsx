@@ -11,7 +11,7 @@ export default async function Home() {
         <div className="bg-white rounded-xl shadow-md px-5 py-10">
           <h3 className="text-[#667eee] mb-2 text-1xl">supabase初体验</h3>
           <p className="mb-3">使用supabase实现数据持久化，创建一篇文章</p>
-          <Link href='/add' className="px-2 py-2 bg-[#667eee] text-white rounded transition-all duration-300">查看示例</Link>
+          <Link href='/posts/create' className="px-2 py-2 bg-[#667eee] text-white rounded transition-all duration-300">查看示例</Link>
         </div>
       </div>
     </div>

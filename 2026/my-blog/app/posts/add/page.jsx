@@ -7,7 +7,7 @@ export default async function Addarticle() {
     const { data: posts, error } = await supabase.from('posts').select('title, content')
     return (
         <div>
-            {JSON.stringify(posts)}
+            {/* {JSON.stringify(posts)} */}
             <CreatePosts></CreatePosts> 
        </div>
     )

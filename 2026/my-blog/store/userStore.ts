@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 import type { User, UserProfile, UserState } from '@/types/user'
 import { createClient } from '@/utils/supabase/client'
+import { isSupabasePublicEnvConfigured } from '@/utils/supabase/public-env'
 
 interface UserStore extends UserState {
   // Actions
@@ -76,23 +77,28 @@ export const useUserStore = create<UserStore>()(
         }, 1500) // 1.5秒超时
 
         try {
-          const supabase = createClient()
-
-          // 检查环境变量是否正确配置
-          if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-            console.error('Supabase environment variables not configured')
+          if (!isSupabasePublicEnvConfigured()) {
+            console.error(
+              'Supabase 环境变量未配置：需要 NEXT_PUBLIC_SUPABASE_URL 与以下之一：NEXT_PUBLIC_SUPABASE_ANON_KEY、NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY、NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY'
+            )
             set({ isLoading: false })
             clearTimeout(timeoutId)
             return
           }
 
+          const supabase = createClient()
+
           // 1. 获取当前用户 Session
           const { data: { user }, error: userError } = await supabase.auth.getUser()
-          
-          if (userError) {
+
+          const isSessionMissing =
+            userError &&
+            (userError.name === 'AuthSessionMissingError' ||
+              /session missing/i.test(userError.message ?? ''))
+
+          if (userError && !isSessionMissing) {
             console.error('Failed to get user:', userError)
           }
-          
           if (userError || !user) {
             // 验证失败或无用户，清除状态
             if (state.isAuthenticated) {

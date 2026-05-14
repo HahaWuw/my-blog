@@ -1,5 +1,6 @@
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
+import { Suspense } from 'react'
 import LoginForm from '@/components/LoginForm'
 
 export default async function LoginPage() {
@@ -16,7 +17,9 @@ export default async function LoginPage() {
       <div className="max-w-md mx-auto">
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8">
           <h1 className="text-3xl font-bold mb-6 text-center">登录</h1>
-          <LoginForm />
+          <Suspense fallback={<p className="text-center text-gray-500">加载中…</p>}>
+            <LoginForm />
+          </Suspense>
         </div>
       </div>
     </div>
